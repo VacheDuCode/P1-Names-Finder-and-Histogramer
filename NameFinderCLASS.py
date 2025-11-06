@@ -104,8 +104,10 @@ class NameFinder:
                 self.cleaned_lines.remove(line) 
             elif len(str(line).split()) > 2:
                 self.cleaned_lines.remove(line) 
-        self.cleaned_lines = [line for line in self.cleaned_lines if line.strip()]
+            elif self.cleaned_lines.index(line) < self.cleaned_lines.index('Boy Names:'): 
+                self.cleaned_lines.remove(line)
 
+        self.cleaned_lines = [line for line in self.cleaned_lines if line.strip()]
         #make own function somehow...
         self.boy_names = []
         self.girl_names = []
@@ -159,6 +161,7 @@ class NameFinder:
 #needs added to main.....!!!!
     def make_cleaned_names_file(self) -> None:
         with open('CleanedListOfNames.txt', 'w', encoding='utf-8') as cleaned_list_of_names_file:
+            print(self.cleaned_lines)
             for line in self.cleaned_lines:
                 cleaned_list_of_names_file.write(line + '\n')
 
