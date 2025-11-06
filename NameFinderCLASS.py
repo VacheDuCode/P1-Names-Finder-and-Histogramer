@@ -10,9 +10,9 @@ import re
 
 class NameFinder:
 
-#dont forget reuqirements.txt later!!!!......
 #redocleaning - delete lines with characters not letters or spaces or.....
-
+#
+#!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     def __init__(self) -> None:
         print("Welcome to the Name Finder! \n")
@@ -48,32 +48,26 @@ class NameFinder:
 
 
     def get_cleaned_lines_from_names_file(self) -> None:
-        # #debug
-        # linesss = []
-        # for line in self.names_file:
-        #     print('line2:', line)
-        #     linesss.append(line)
-        # print(linesss)
-        # #Why doesn't this list comprehension work?????????s
-        # linesss = [line for line in self.names_file]
-        # print(f"{linesss=}")
-        # print("get_cleaned:", linesss)
-
         self.cleaned_lines = []
         for line in self.names_file:
             self.cleaned_lines.append(self.clean_line(line))
 
         # #Why doesn't this list comprehension work?????????s
         # self.cleaned_lines = [self.clean_line(line) for line in self.names_file]
-        if '' in self.cleaned_lines:
-            self.cleaned_lines.remove('')
-       
+        
+        #debug
+        print(self.cleaned_lines)
+
         self.names_file.close()
 
-#redo this
     def clean_line(self, line) -> str:
         line = line.strip()
         line = line.title()
+
+        for word in line.split():
+            if not word.isalpha() and line != 'Boy Names:' and line != 'Girl Names:':
+                line = '   '
+
         return line
 
     def get_names_from_file(self) -> None:
@@ -103,33 +97,33 @@ class NameFinder:
             self.names_file.close()
             self.get_names_file_from_user()
 
+    def remove_duplicate_names(self) -> None:
+        #something wrong here....?
+        for line in self.cleaned_lines:
+            while self.cleaned_lines.count(line) > 1:
+                self.cleaned_lines.remove(line)
+        #debug
+        print("after remove dups:", self.cleaned_lines)
+
     def remove_trash_names(self) -> None:
         for line in self.cleaned_lines:
-            #make own function?...
-            for letter in line:
-                if line not in self.cleaned_lines or line == 'Boy Names:' or line == 'Girl Names:':
-                    continue
-                elif not letter.isalpha():
-                    self.cleaned_lines.remove(line)
-                    
-            if ":" in line and line != 'Boy Names:' and line != 'Girl Names:':
-                self.cleaned_lines.remove(line)
-            if line in self.cleaned_lines and '  ' in line:
-                self.cleaned_lines.remove(line)
+            #debug
+            if '  ' in line:
+                line.replace('  ', " ")
             if line in self.cleaned_lines and len(str(line)) < 2:
                 self.cleaned_lines.remove(line) 
             if line in self.cleaned_lines and len(str(line).split()) > 2:
                 self.cleaned_lines.remove(line) 
 
-                #debug
-                print(line.split())
-                print("removed:", line)
+        #self.cleaned_lines = list(filter(None, self.cleaned_lines))
 
-        self.cleaned_lines = list(filter(None, self.cleaned_lines))
+        #DEBUGG!! something before this not working...
+        print(self.cleaned_lines)
 
         #make own function somehow...
         self.boy_names = []
         self.girl_names = []
+
         for line in self.cleaned_lines:
             if self.cleaned_lines.index(line) > self.cleaned_lines.index('Boy Names:') and self.cleaned_lines.index(line) < self.cleaned_lines.index('Girl Names:'):
                 self.boy_names.append(line)
@@ -152,30 +146,22 @@ class NameFinder:
         #         if not letter.isalpha():
         #             self.girl_names.remove(name)
 
-
-    def remove_duplicate_names(self) -> None:
-        for line in self.cleaned_lines:
-            if self.cleaned_lines.count(line) > 1:
-                self.cleaned_lines.remove(line)
-
     def sort_names_by_first_letter(self) -> None:
         #make these subfunctions
         first_letters = []
         for name in self.boy_names:
             if name[0] not in first_letters:
                 first_letters.append(name[0])
-        print(first_letters)
 
         self.boy_names = {name_value[0]:[name for name in self.boy_names if name[0]==name_value[0]] for name_value in self.boy_names}
         print(f"{self.boy_names=}")
 
-        #make own function
+        #make own function...
         first_letters = []
         for name in self.girl_names:
             if name[0] not in first_letters:
                 first_letters.append(name[0])
-        print(first_letters)
-        
+
         self.girl_names = {name_value[0]:[name for name in self.girl_names if name[0]==name_value[0]] for name_value in self.girl_names}
         print(f"{self.girl_names=}")
 
@@ -210,7 +196,6 @@ class NameFinder:
         if (self.name_first_letter not in self.boy_names and self.gender_preference == 'b') or (self.name_first_letter not in self.girl_names and self.gender_preference == 'g'):
             print("Error: There are no listed names of that gender starting with that letter.\nPlease try another letter:")
             self.get_user_name_first_letter()
-
 
     def show_matching_names(self) -> None:
         if self.gender_preference == 'b':
