@@ -198,6 +198,8 @@ class NameFinder:
 
         if self.plot_histogram_preference == 'y':
             self.plot_name_first_letter_histogram()
+        else:
+            self.closing_message()
 
     def check_plot_histogram_preference_is_valid(self) -> None:
         if self.plot_histogram_preference not in ['y', 'n']:
@@ -205,26 +207,33 @@ class NameFinder:
             self.ask_user_to_plot_histogram()
 
     def plot_name_first_letter_histogram(self) -> None:
-        # Need 2 sub plots, one for each gender with bins for each letter of alphabet
-        # Need number of names that start with each letter above each bin
-        # Need arrow with chosen name above corresponding bin
-        print("Plotting histogram... (functionality not yet implemented)")
+        # Need arrow with chosen name above corresponding bin        
+        fig, (ax1_boy_names, ax2_girl_names) = plt.subplots(1, 2)
+        fig.suptitle('Distribution of boy and girl names by first letter')
+        plt.style.use('_mpl-gallery')
 
-        x = np.arange(0, 5, 0.1)
-        y = np.sin(x)
+        # plot boy:
+        x1 = [letter for letter in self.boy_names]
+        y1 = [len(self.boy_names[letter]) for letter in x1]
 
-        fig = plt.figure()
-        ax1_boy_names = fig.add_subplot(1, 2, 1)
-        ax2_girl_names = fig.add_subplot(1, 2, 2)
+        ax1_boy_names.bar(x1, y1, width=1, edgecolor='white', linewidth=0.7)
+        ax1_boy_names.set(xlim=(-0.5, len(x1)-0.5), xticks=np.arange(0, len(x1)),
+                          ylim=(0, max(y1)*1.05+0.5), yticks=np.arange(1, max(y1)+2))
+
+        ax1_boy_names.set_xlabel('First Letter')
+        ax1_boy_names.set_ylabel('Count')
+        ax1_boy_names.set_title('Boy Names')
+
+        # plot girl:
+        x2 = [letter for letter in self.girl_names]
+        y2 = [len(self.girl_names[letter]) for letter in x2]
+
+        ax2_girl_names.bar(x2, y2, width=1, edgecolor='white', linewidth=0.7)
+        ax2_girl_names.set(xlim=(-0.5, len(x2)-0.5), xticks=np.arange(0, len(x2)),
+                          ylim=(0, max(y2)*1.05+0.5), yticks=np.arange(1, max(y2)+2))
         
-
-        ax1_boy_names.plot(x, y)
-
-        ax2_girl_names.plot(x, y)
-
-
-
-
+        ax2_girl_names.set_xlabel('First Letter')
+        ax2_girl_names.set_title('Girl Names')
 
         plt.show()
 
