@@ -76,52 +76,11 @@ class NameFinder:
         line = line.title()
         return line
 
-
     def get_names_from_file(self) -> None:
         self.check_for_correct_gender_headers()
         self.check_for_names_under_both_gender_headers()
-        self.remove_trash_names()
         self.remove_duplicate_names()
-
-
-        #make own function somehow...
-        self.boy_names = []
-        self.girl_names = []
-        for line in self.cleaned_lines:
-            if self.cleaned_lines.index(line) > self.cleaned_lines.index('Boy Names:') and self.cleaned_lines.index(line) < self.cleaned_lines.index('Girl Names:'):
-                self.boy_names.append(line)
-            elif self.cleaned_lines.index(line) > self.cleaned_lines.index('Girl Names:'):
-                self.girl_names.append(line)
-
-        #make own functions somewhere.....
-        print(self.boy_names)
-        for name in self.boy_names:
-            for letter in name:
-                if name not in self.boy_names:
-                    continue
-                elif not letter.isalpha():
-                    self.boy_names.remove(name) 
-
-        for name in self.girl_names:
-            for letter in name:
-                if name not in self.girl_names:
-                    continue
-                if not letter.isalpha():
-                    self.girl_names.remove(name)
-
-
-        for name in self.boy_names:
-            if name not in self.boy_names:
-                continue
-            elif len(name.split()) > 2:
-                self.boy_names.remove(name) 
-
-        for name in self.girl_names:
-            if name not in self.girl_names:
-                continue
-            elif len(name.split()) > 2:
-                self.girl_names.remove(name)
-        
+        self.remove_trash_names()
         self.sort_names_by_first_letter()
 
     def check_for_correct_gender_headers(self) -> None:
@@ -146,14 +105,53 @@ class NameFinder:
 
     def remove_trash_names(self) -> None:
         for line in self.cleaned_lines:
+            #make own function?...
+            for letter in line:
+                if line not in self.cleaned_lines or line == 'Boy Names:' or line == 'Girl Names:':
+                    continue
+                elif not letter.isalpha():
+                    self.cleaned_lines.remove(line)
+                    
             if ":" in line and line != 'Boy Names:' and line != 'Girl Names:':
                 self.cleaned_lines.remove(line)
-            elif '  ' in line:
+            if line in self.cleaned_lines and '  ' in line:
                 self.cleaned_lines.remove(line)
-            elif len(line) < 2:
+            if line in self.cleaned_lines and len(str(line)) < 2:
+                self.cleaned_lines.remove(line) 
+            if line in self.cleaned_lines and len(str(line).split()) > 2:
                 self.cleaned_lines.remove(line) 
 
+                #debug
+                print(line.split())
+                print("removed:", line)
+
         self.cleaned_lines = list(filter(None, self.cleaned_lines))
+
+        #make own function somehow...
+        self.boy_names = []
+        self.girl_names = []
+        for line in self.cleaned_lines:
+            if self.cleaned_lines.index(line) > self.cleaned_lines.index('Boy Names:') and self.cleaned_lines.index(line) < self.cleaned_lines.index('Girl Names:'):
+                self.boy_names.append(line)
+            elif self.cleaned_lines.index(line) > self.cleaned_lines.index('Girl Names:'):
+                self.girl_names.append(line)
+
+        # #make own functions somewhere...sort boy and girl names ():...
+        # print(self.boy_names)
+        # for name in self.boy_names:
+        #     for letter in name:
+        #         if name not in self.boy_names:
+        #             continue
+        #         elif not letter.isalpha():
+        #             self.boy_names.remove(name) 
+
+        # for name in self.girl_names:
+        #     for letter in name:
+        #         if name not in self.girl_names:
+        #             continue
+        #         if not letter.isalpha():
+        #             self.girl_names.remove(name)
+
 
     def remove_duplicate_names(self) -> None:
         for line in self.cleaned_lines:
@@ -171,7 +169,7 @@ class NameFinder:
         self.boy_names = {name_value[0]:[name for name in self.boy_names if name[0]==name_value[0]] for name_value in self.boy_names}
         print(f"{self.boy_names=}")
 
-
+        #make own function
         first_letters = []
         for name in self.girl_names:
             if name[0] not in first_letters:
