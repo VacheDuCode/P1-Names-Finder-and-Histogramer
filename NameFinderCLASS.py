@@ -54,10 +54,6 @@ class NameFinder:
 
         # #Why doesn't this list comprehension work?????????s
         # self.cleaned_lines = [self.clean_line(line) for line in self.names_file]
-        
-        #debug
-        print(self.cleaned_lines)
-
         self.names_file.close()
 
     def clean_line(self, line) -> str:
@@ -98,32 +94,21 @@ class NameFinder:
             self.get_names_file_from_user()
 
     def remove_duplicate_names(self) -> None:
-        #something wrong here....?
-        for line in self.cleaned_lines:
-            while self.cleaned_lines.count(line) > 1:
-                self.cleaned_lines.remove(line)
-        #debug
-        print("after remove dups:", self.cleaned_lines)
+        tmp = []
+        [tmp.append(line) for line in self.cleaned_lines if line not in tmp]
+        self.cleaned_lines = tmp
 
     def remove_trash_names(self) -> None:
         for line in self.cleaned_lines:
-            #debug
-            if '  ' in line:
-                line.replace('  ', " ")
-            if line in self.cleaned_lines and len(str(line)) < 2:
+            if len(str(line)) < 2:
                 self.cleaned_lines.remove(line) 
-            if line in self.cleaned_lines and len(str(line).split()) > 2:
+            elif len(str(line).split()) > 2:
                 self.cleaned_lines.remove(line) 
-
-        #self.cleaned_lines = list(filter(None, self.cleaned_lines))
-
-        #DEBUGG!! something before this not working...
-        print(self.cleaned_lines)
+        self.cleaned_lines = [line for line in self.cleaned_lines if line.strip()]
 
         #make own function somehow...
         self.boy_names = []
         self.girl_names = []
-
         for line in self.cleaned_lines:
             if self.cleaned_lines.index(line) > self.cleaned_lines.index('Boy Names:') and self.cleaned_lines.index(line) < self.cleaned_lines.index('Girl Names:'):
                 self.boy_names.append(line)
