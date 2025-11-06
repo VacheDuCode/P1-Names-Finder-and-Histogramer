@@ -4,6 +4,7 @@ import numpy as np
 #import math
 #import requests
 import matplotlib.pyplot as plt
+from matplotlib.ticker import MaxNLocator
 #import openpyxl
 import re
 # import itertools
@@ -214,6 +215,7 @@ class NameFinder:
 
         # plot boy:
         x1 = [letter for letter in self.boy_names]
+        x1.sort()
         y1 = [len(self.boy_names[letter]) for letter in x1]
 
         ax1_boy_names.bar(x1, y1, width=1, edgecolor='white', linewidth=0.7)
@@ -226,16 +228,28 @@ class NameFinder:
 
         # plot girl:
         x2 = [letter for letter in self.girl_names]
+        x2.sort()   
         y2 = [len(self.girl_names[letter]) for letter in x2]
 
         ax2_girl_names.bar(x2, y2, width=1, edgecolor='white', linewidth=0.7)
         ax2_girl_names.set(xlim=(-0.5, len(x2)-0.5), xticks=np.arange(0, len(x2)),
                           ylim=(0, max(y2)*1.05+0.5), yticks=np.arange(1, max(y2)+2))
-        
+
         ax2_girl_names.set_xlabel('First Letter')
         ax2_girl_names.set_title('Girl Names')
 
+        ax1_boy_names.yaxis.set_major_locator(MaxNLocator(nbins=8))  
+        ax2_girl_names.yaxis.set_major_locator(MaxNLocator(nbins=8)) 
+
+        if self.gender_preference == 'b':
+            ax1_boy_names.annotate(str(self.boy_names[self.name_first_letter][:2])+"....", fontsize=9, xy=(x1[x1.index(self.name_first_letter)], y1[x1.index(self.name_first_letter)]), xytext=(x1[x1.index(self.name_first_letter)], y1[x1.index(self.name_first_letter)]+(max(y1)/8)),
+                                    arrowprops=dict(facecolor='green', shrink=0.05))
+        elif self.gender_preference == 'g':
+            ax2_girl_names.annotate(str(self.girl_names[self.name_first_letter][:2])+"....", fontsize=9, xy=(x2[x2.index(self.name_first_letter)], y2[x2.index(self.name_first_letter)]), xytext=(x2[x2.index(self.name_first_letter)], y2[x2.index(self.name_first_letter)]+(max(y2)/8)),
+                                    arrowprops=dict(facecolor='green', shrink=0.05))
+
         plt.show()
+        self.closing_message()
 
     def closing_message(self) -> None:
         print("Thank you for using the Name Finder! Goodbye.")
@@ -252,7 +266,6 @@ def main():
     name_finder.show_matching_names()
 
     name_finder.ask_user_to_plot_histogram()
-    name_finder.closing_message()
 
 if __name__ == '__main__':
     main()
