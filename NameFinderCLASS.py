@@ -194,7 +194,7 @@ class NameFinder:
 
 
     def ask_user_to_plot_histogram(self) -> None:
-        self.plot_histogram_preference = input("Do you want to see a histogram of the first letters of the names? (y/n): ").lower()
+        self.plot_histogram_preference = input("Would you like to see a histogram of the names with an example? (y/n): ").lower()
         self.check_plot_histogram_preference_is_valid()
 
         if self.plot_histogram_preference == 'y':
@@ -242,11 +242,11 @@ class NameFinder:
         ax2_girl_names.yaxis.set_major_locator(MaxNLocator(nbins=8)) 
 
         if self.gender_preference == 'b':
-            ax1_boy_names.annotate(str(self.boy_names[self.name_first_letter][:2])+"....", fontsize=9, xy=(x1[x1.index(self.name_first_letter)], y1[x1.index(self.name_first_letter)]), xytext=(x1[x1.index(self.name_first_letter)], y1[x1.index(self.name_first_letter)]+(max(y1)/8)),
-                                    arrowprops=dict(facecolor='green', shrink=0.05))
+            ax1_boy_names.annotate(str("ex.: "+self.boy_names[self.name_first_letter][0]), fontsize=9, xy=(x1[x1.index(self.name_first_letter)], y1[x1.index(self.name_first_letter)]), xytext=(x1[x1.index(self.name_first_letter)], y1[x1.index(self.name_first_letter)]+(max(y1)/8)),
+                                    arrowprops=dict(facecolor='red', shrink=0.05))
         elif self.gender_preference == 'g':
-            ax2_girl_names.annotate(str(self.girl_names[self.name_first_letter][:2])+"....", fontsize=9, xy=(x2[x2.index(self.name_first_letter)], y2[x2.index(self.name_first_letter)]), xytext=(x2[x2.index(self.name_first_letter)], y2[x2.index(self.name_first_letter)]+(max(y2)/8)),
-                                    arrowprops=dict(facecolor='green', shrink=0.05))
+            ax2_girl_names.annotate(str("ex: "+self.girl_names[self.name_first_letter][0]), fontsize=9, xy=(x2[x2.index(self.name_first_letter)], y2[x2.index(self.name_first_letter)]), xytext=(x2[x2.index(self.name_first_letter)], y2[x2.index(self.name_first_letter)]+(max(y2)/8)),
+                                    arrowprops=dict(facecolor='red', shrink=0.05))
 
         plt.show()
         self.closing_message()
