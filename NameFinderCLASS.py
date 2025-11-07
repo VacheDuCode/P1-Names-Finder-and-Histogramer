@@ -28,10 +28,7 @@ class NameFinder:
             self.names_file = open(self.user_input, 'r', encoding='utf-8')
         except Exception as e:
             print("Error: ", e)
-            self.get_names_file_from_user()
-        else:
-            self.names_file = open(self.user_input, 'r', encoding='utf-8')
-  
+            self.get_names_file_from_user()  
 
     def get_cleaned_lines_from_names_file(self) -> None:
         self.cleaned_lines = []
