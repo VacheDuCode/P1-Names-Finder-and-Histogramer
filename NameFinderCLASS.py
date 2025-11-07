@@ -55,6 +55,7 @@ class NameFinder:
         self.check_for_names_under_both_gender_headers()
         self.remove_duplicate_names()
         self.remove_trash_names()
+        self.remove_emtpy_lines
         self.make_names_list_by_gender()
         self.sort_names_by_first_letter()
 
@@ -91,7 +92,6 @@ class NameFinder:
                 self.cleaned_lines.remove(line) 
             elif self.cleaned_lines.index(line) < self.cleaned_lines.index('Boy Names:'): 
                 self.cleaned_lines.remove(line)
-        self.remove_emtpy_lines()
 
     def remove_emtpy_lines(self) -> None:
         self.cleaned_lines = [line for line in self.cleaned_lines if line.strip()]
@@ -105,13 +105,6 @@ class NameFinder:
                 self.boy_names.append(line)
             elif self.cleaned_lines.index(line) > self.cleaned_lines.index('Girl Names:'):
                 self.girl_names.append(line)
-    
-
-    def check_names_file_is_empty(self) -> None:
-            if self.cleaned_lines == [] :  
-                print("Error: The file is empty. Please provide a non-empty file.")
-                self.names_file.close()
-                self.get_names_file_from_user()
 
     def sort_names_by_first_letter(self) -> None:
         self.boy_names = {name_value[0]:[name for name in self.boy_names if name[0]==name_value[0]] for name_value in self.boy_names}
