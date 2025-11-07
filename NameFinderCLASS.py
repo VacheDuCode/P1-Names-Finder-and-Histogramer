@@ -53,12 +53,13 @@ class NameFinder:
     def get_names_from_file(self) -> None:
         #weird spot to do this...
         self.check_for_correct_gender_headers()
-        self.check_for_names_under_both_gender_headers()
 
         #separate
         self.remove_duplicate_names()
         self.remove_trash_names()
         self.remove_emtpy_lines()
+
+        self.check_for_names_under_both_gender_headers()
 
         #should be separate probably
         self.make_names_list_by_gender()
@@ -78,12 +79,6 @@ class NameFinder:
             self.names_file.close()
             self.get_names_file_from_user()
 
-    def check_for_names_under_both_gender_headers(self) -> None:
-        if self.cleaned_lines[self.cleaned_lines.index(self.BOY_HEADER)+1] == self.GIRL_HEADER or self.cleaned_lines[self.cleaned_lines.index(self.GIRL_HEADER)+1] == self.EMPTY_LINE:
-            print("Error: There must be at least one name under each gender header.")
-            self.names_file.close()
-            self.get_names_file_from_user()
-
     def remove_duplicate_names(self) -> None:
         self.cleaned_lines = list(dict.fromkeys(self.cleaned_lines))
 
@@ -99,6 +94,12 @@ class NameFinder:
     def remove_emtpy_lines(self) -> None:
         self.cleaned_lines = [line for line in self.cleaned_lines if line.strip()]
         print(self.cleaned_lines)
+
+    def check_for_names_under_both_gender_headers(self) -> None:
+        if self.cleaned_lines[self.cleaned_lines.index(self.BOY_HEADER)+1] == self.GIRL_HEADER or self.cleaned_lines[self.cleaned_lines.index(self.GIRL_HEADER)+1] == self.EMPTY_LINE:
+            print("Error: There must be at least one name under each gender header.")
+            self.get_names_file_from_user()
+
 
     def make_names_list_by_gender(self) -> None:
         self.boy_names = []
