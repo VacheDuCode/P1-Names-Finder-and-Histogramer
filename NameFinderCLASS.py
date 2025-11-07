@@ -10,11 +10,6 @@ import re
 # import itertools
 
 class NameFinder:
-
-#redocleaning - delete lines with characters not letters or spaces or.....
-#
-#!!!!!!!!!!!!!!!!!!!!!!!!!!
-
     def __init__(self) -> None:
         print("Welcome to the Name Finder! \n")
         self.get_names_file_data()
@@ -22,9 +17,7 @@ class NameFinder:
     def get_names_file_data(self) -> None:
         self.get_names_file_from_user()
         self.get_cleaned_lines_from_names_file()
-        self.check_names_file_is_empty()
         self.get_names_from_file()
-
 
     def get_names_file_from_user(self) -> None:
         self.user_input = input('Please enter a text file to get names from (example: names.txt):')
@@ -38,15 +31,7 @@ class NameFinder:
             self.get_names_file_from_user()
         else:
             self.names_file = open(self.user_input, 'r', encoding='utf-8')
-
-        
-    def check_names_file_is_empty(self) -> None:
-        #needs something here...
-        if self.cleaned_lines == '':  
-            print("Error: The file is empty. Please provide a non-empty file.")
-            self.names_file.close()
-            self.get_names_file_from_user()
-
+  
 
     def get_cleaned_lines_from_names_file(self) -> None:
         self.cleaned_lines = []
@@ -58,20 +43,19 @@ class NameFinder:
         self.names_file.close()
 
     def clean_line(self, line) -> str:
-        line = line.strip()
-        line = line.title()
-
+        line = line.strip().title()
         for word in line.split():
             if not word.isalpha() and line != 'Boy Names:' and line != 'Girl Names:':
                 line = '   '
-
         return line
+
 
     def get_names_from_file(self) -> None:
         self.check_for_correct_gender_headers()
         self.check_for_names_under_both_gender_headers()
         self.remove_duplicate_names()
         self.remove_trash_names()
+        self.make_names_list_by_gender()
         self.sort_names_by_first_letter()
 
     def check_for_correct_gender_headers(self) -> None:
@@ -107,9 +91,13 @@ class NameFinder:
                 self.cleaned_lines.remove(line) 
             elif self.cleaned_lines.index(line) < self.cleaned_lines.index('Boy Names:'): 
                 self.cleaned_lines.remove(line)
+        self.remove_emtpy_lines()
 
+    def remove_emtpy_lines(self) -> None:
         self.cleaned_lines = [line for line in self.cleaned_lines if line.strip()]
-        #make own function somehow...
+
+
+    def make_names_list_by_gender(self) -> None:
         self.boy_names = []
         self.girl_names = []
         for line in self.cleaned_lines:
@@ -117,41 +105,17 @@ class NameFinder:
                 self.boy_names.append(line)
             elif self.cleaned_lines.index(line) > self.cleaned_lines.index('Girl Names:'):
                 self.girl_names.append(line)
+    
 
-        # #make own functions somewhere...sort boy and girl names ():...
-        # print(self.boy_names)
-        # for name in self.boy_names:
-        #     for letter in name:
-        #         if name not in self.boy_names:
-        #             continue
-        #         elif not letter.isalpha():
-        #             self.boy_names.remove(name) 
-
-        # for name in self.girl_names:
-        #     for letter in name:
-        #         if name not in self.girl_names:
-        #             continue
-        #         if not letter.isalpha():
-        #             self.girl_names.remove(name)
+    def check_names_file_is_empty(self) -> None:
+            if self.cleaned_lines == [] :  
+                print("Error: The file is empty. Please provide a non-empty file.")
+                self.names_file.close()
+                self.get_names_file_from_user()
 
     def sort_names_by_first_letter(self) -> None:
-        #make these subfunctions
-        first_letters = []
-        for name in self.boy_names:
-            if name[0] not in first_letters:
-                first_letters.append(name[0])
-
         self.boy_names = {name_value[0]:[name for name in self.boy_names if name[0]==name_value[0]] for name_value in self.boy_names}
-        print(f"{self.boy_names=}")
-
-        #make own function...
-        first_letters = []
-        for name in self.girl_names:
-            if name[0] not in first_letters:
-                first_letters.append(name[0])
-
         self.girl_names = {name_value[0]:[name for name in self.girl_names if name[0]==name_value[0]] for name_value in self.girl_names}
-        print(f"{self.girl_names=}")
 
         # #Why don't these list comprehensions work????...
         # first_letters = [name[0] for name in self.boy_names]
@@ -159,10 +123,9 @@ class NameFinder:
         # first_letters = [name[0] for name in self.girl_names]
         # self.boy_names = {first_letter: [name for name in self.girl_names if name.startswith(first_letter)] for first_letter in first_letters}
 
-#needs added to main.....!!!!
+
     def make_cleaned_names_file(self) -> None:
         with open('CleanedListOfNames.txt', 'w', encoding='utf-8') as cleaned_list_of_names_file:
-            print(self.cleaned_lines)
             for line in self.cleaned_lines:
                 cleaned_list_of_names_file.write(line + '\n')
 
@@ -186,6 +149,7 @@ class NameFinder:
             print("Error: There are no listed names of that gender starting with that letter.\nPlease try another letter:")
             self.get_user_name_first_letter()
 
+
     def show_matching_names(self) -> None:
         if self.gender_preference == 'b':
             print(f"Here are the boy names starting with '{self.name_first_letter}':\n", self.boy_names[self.name_first_letter])
@@ -206,6 +170,7 @@ class NameFinder:
         if self.plot_histogram_preference not in ['y', 'n']:
             print("Error: Please enter 'y' for yes or 'n' for no.")
             self.ask_user_to_plot_histogram()
+
 
     def plot_name_first_letter_histogram(self) -> None:
         # Need arrow with chosen name above corresponding bin        
