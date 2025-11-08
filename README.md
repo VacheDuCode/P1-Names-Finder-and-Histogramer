@@ -12,7 +12,14 @@ Notes to self: Try to keep  the code clean! :: high level to low level functions
 
 key words:
 check
-get 
+
+get (file)
+extract
+
 clean
-sort
+remove
+
+load (sort names)
+
 show
+run

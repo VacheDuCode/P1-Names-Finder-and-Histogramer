@@ -9,8 +9,7 @@ from matplotlib.ticker import MaxNLocator
 import re
 # import itertools
 
-#need to decouple I/O (separate extract, transformation, load, then output)
-#need to break up/refactor get name and get data fucntion for this
+# 0.Check funciton order.
 class NameFinder:
     BOY_HEADER = 'Boy Names:'
     GIRL_HEADER = 'Girl Names:'
@@ -18,14 +17,13 @@ class NameFinder:
 
     def __init__(self) -> None:
         print("Welcome to the Name Finder! \n")
-        self.get_names_file_data()
+        self.extract_file_data()
         
-    def get_names_file_data(self) -> None:
-        self.get_names_file_from_user()
-        self.get_cleaned_lines_from_names_file()
-        self.get_names_from_file()
+    def extract_file_data(self) -> None:
+        self.get_names_file()
+        self.extract_and_clean_lines_from_file()
 
-    def get_names_file_from_user(self) -> None:
+    def get_names_file(self) -> None:
         self.user_input = input('Please enter a text file to get names from (example: names.txt):')
         self.try_getting_names_file()
 
@@ -34,12 +32,13 @@ class NameFinder:
             self.names_file = open(self.user_input, 'r', encoding='utf-8')
         except Exception as e:
             print("Error: ", e)
-            self.get_names_file_from_user()  
+            self.get_names_file()  
 
-    def get_cleaned_lines_from_names_file(self) -> None:
+    def extract_and_clean_lines_from_file(self) -> None:
         self.cleaned_lines = []
         for line in self.names_file:
             self.cleaned_lines.append(self.clean_line(line))
+        self.remove_empty_lines()
         self.names_file.close()
 
     def clean_line(self, line) -> str:
@@ -50,37 +49,42 @@ class NameFinder:
         return line
 
 
-    def get_names_from_file(self) -> None:
-        #weird spot to do this...
+    def check_file_format(self) -> None:
         self.check_for_correct_gender_headers()
-
-        #separate
-        self.remove_duplicate_names()
-        self.remove_trash_names()
-        self.remove_emtpy_lines()
-
         self.check_for_names_under_both_gender_headers()
-
-        #should be separate probably
-        self.make_names_list_by_gender()
-        self.sort_names_by_first_letter()
-
+    
     def check_for_correct_gender_headers(self) -> None:
         if self.BOY_HEADER not in self.cleaned_lines or self.GIRL_HEADER not in self.cleaned_lines:
             print("Error: The file must have header for 'Girl Names:' and 'Boy Names:'.")
-            self.names_file.close()          
-            self.get_names_file_from_user()
-        elif self.cleaned_lines.count(self.BOY_HEADER) > 1 or self.cleaned_lines.count(self.GIRL_HEADER) > 1:
+            self.get_names_file()
+
+        self.BOY_HEADER_index = self.cleaned_lines.index(self.BOY_HEADER)
+        self.GIRL_HEADER_index = self.cleaned_lines.index(self.GIRL_HEADER)
+        if self.cleaned_lines.count(self.BOY_HEADER) > 1 or self.cleaned_lines.count(self.GIRL_HEADER) > 1:
             print("Error: The file must have only one 'Boy Names:' header and only one 'Girl Names:' header.")
-            self.names_file.close()
-            self.get_names_file_from_user()
-        elif self.cleaned_lines.index(self.GIRL_HEADER) < self.cleaned_lines.index(self.BOY_HEADER):
+            self.get_names_file()
+        elif self.GIRL_HEADER_index < self.BOY_HEADER_index:
             print("Error: The 'Boy Names:' header must come before the 'Girl Names:' header.")
-            self.names_file.close()
-            self.get_names_file_from_user()
+            self.get_names_file()
+
+    def check_for_names_under_both_gender_headers(self) -> None:
+        if self.cleaned_lines[self.cleaned_lines.index(self.BOY_HEADER)+1] == self.GIRL_HEADER or self.cleaned_lines[self.cleaned_lines.index(self.GIRL_HEADER)+1] == self.EMPTY_LINE:
+            print("Error: There must be at least one name under each gender header.")
+            self.get_names_file()
+
+
+    def remove_bad_data(self) -> None:
+        self.remove_duplicate_names()
+        self.get_HEADERs_indices()
+        self.remove_trash_names()
+        self.remove_empty_lines()
 
     def remove_duplicate_names(self) -> None:
         self.cleaned_lines = list(dict.fromkeys(self.cleaned_lines))
+
+    def get_HEADERs_indices(self) -> None:
+        self.BOY_HEADER_index = self.cleaned_lines.index(self.BOY_HEADER)
+        self.GIRL_HEADER_index = self.cleaned_lines.index(self.GIRL_HEADER)
 
     def remove_trash_names(self) -> None: 
         for line_index in range(len(self.cleaned_lines)):
@@ -88,26 +92,26 @@ class NameFinder:
                 self.cleaned_lines[line_index] = self.EMPTY_LINE
             elif len(str(self.cleaned_lines[line_index]).split()) > 2:
                 self.cleaned_lines[line_index] = self.EMPTY_LINE
-            elif line_index < self.cleaned_lines.index(self.BOY_HEADER):
+            elif line_index < self.BOY_HEADER_index:
                 self.cleaned_lines[line_index] = self.EMPTY_LINE
 
-    def remove_emtpy_lines(self) -> None:
+    def remove_empty_lines(self) -> None:
         self.cleaned_lines = [line for line in self.cleaned_lines if line.strip()]
-        print(self.cleaned_lines)
 
-    def check_for_names_under_both_gender_headers(self) -> None:
-        if self.cleaned_lines[self.cleaned_lines.index(self.BOY_HEADER)+1] == self.GIRL_HEADER or self.cleaned_lines[self.cleaned_lines.index(self.GIRL_HEADER)+1] == self.EMPTY_LINE:
-            print("Error: There must be at least one name under each gender header.")
-            self.get_names_file_from_user()
 
+    def load_names_data(self) -> None:
+        self.make_names_list_by_gender()
+        self.sort_names_by_first_letter()
 
     def make_names_list_by_gender(self) -> None:
         self.boy_names = []
         self.girl_names = []
+
+        self.get_HEADERs_indices()
         for line in self.cleaned_lines:
-            if self.cleaned_lines.index(line) > self.cleaned_lines.index(self.BOY_HEADER) and self.cleaned_lines.index(line) < self.cleaned_lines.index(self.GIRL_HEADER):
+            if self.cleaned_lines.index(line) > self.BOY_HEADER_index and self.cleaned_lines.index(line) < self.GIRL_HEADER_index:
                 self.boy_names.append(line)
-            elif self.cleaned_lines.index(line) > self.cleaned_lines.index(self.GIRL_HEADER):
+            elif self.cleaned_lines.index(line) > self.GIRL_HEADER_index:
                 self.girl_names.append(line)
 
     def sort_names_by_first_letter(self) -> None:
@@ -162,9 +166,7 @@ class NameFinder:
             print("Error: Please enter 'y' for yes or 'n' for no.")
             self.ask_user_to_plot_histogram()
 
-
     def plot_name_first_letter_histogram(self) -> None:
-        # Need arrow with chosen name above corresponding bin        
         fig, (ax1_boy_names, ax2_girl_names) = plt.subplots(1, 2)
         fig.suptitle('Distribution of boy and girl names by first letter')
         plt.style.use('_mpl-gallery')
@@ -210,6 +212,10 @@ class NameFinder:
         exit()
 
     def run(self) -> None:
+        self.check_file_format()
+        self.remove_bad_data()
+        self.load_names_data()  
+
         self.make_cleaned_names_file()
 
         self.get_user_gender_preference()
@@ -219,7 +225,7 @@ class NameFinder:
 
         self.ask_user_to_plot_histogram()
 
-def main():
+def main() -> None:
     NameFinder().run()
 
 if __name__ == '__main__':
