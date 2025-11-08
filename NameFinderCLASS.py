@@ -9,7 +9,6 @@ from matplotlib.ticker import MaxNLocator
 import re
 # import itertools
 
-# 0.Check funciton order.
 class NameFinder:
     BOY_HEADER = 'Boy Names:'
     GIRL_HEADER = 'Girl Names:'
@@ -41,7 +40,7 @@ class NameFinder:
         self.remove_empty_lines()
         self.names_file.close()
 
-    def clean_line(self, line) -> str:
+    def clean_line(self, line: str) -> str:
         line = line.strip().title()
         for word in line.split():
             if not word.isalpha() and line != self.BOY_HEADER and line != self.GIRL_HEADER:
